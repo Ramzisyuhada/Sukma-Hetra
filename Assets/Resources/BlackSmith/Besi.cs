@@ -34,6 +34,14 @@ public class Besi : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        Vector3 center = transform.position + Vector3.up * 1.0f;
+        float radius = 0.3f;
+
+        if (Physics.CheckSphere(center, radius))
+        {
+            Debug.Log("Ada objek di atas!");
+        }
+
+
     }
 }
