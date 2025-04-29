@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Besi
+  - Item
+  - Door
   layers:
   - Default
   - TransparentFX
@@ -13,8 +15,8 @@ TagManager:
   - Water
   - UI
   - Besi
-  - 
-  - 
+  - LeftHandPhysics
+  - RightHandPhysics
   - 
   - 
   - 

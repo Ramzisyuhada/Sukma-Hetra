@@ -52,7 +52,7 @@ public class Palu : MonoBehaviour
 
                 Sparks.volume = Random.Range(0.3f, 1.3f);
                 Sparks.pitch = Random.Range(0.5f, 1.5f);
-                if (!Sparks.isPlaying) Sparks.Play();
+                Sparks.Play();
 
                 Vector3 scale = col.transform.localScale;
 
