@@ -17,10 +17,12 @@ public class Pembakaran : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.CompareTag("Besi") && !isHeatingStarted)
+        if (!isHeatingStarted && other.GetComponent<Besi>() != null)
         {
-            // Panggil PemanasanBesi hanya sekali
             other.GetComponent<Besi>().PemanasanBesi();
+            other.GetComponent<Besi>().item.item.NamaBarang = JenisBarangEnum.BesiPanas;
+
+            //other.GetComponent<Besi>().Jenis = JenisBarangEnum.BesiPanas;
             isHeatingStarted = true; // Set isHeatingStarted menjadi true agar tidak dipanggil lagi
         }
     }

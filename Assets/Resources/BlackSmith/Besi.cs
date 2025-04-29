@@ -2,15 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+
 public class Besi : MonoBehaviour
 {
     public Material BesiDinginMaterial, BesiPanasMaterial;
 
+   
     [SerializeField] private float heatingTime = 1.5f;
 
-    private Color hotColor = new Color(1f, 0.3f, 0f, 1f); // Warna besi saat panas
+    private Color hotColor = new Color(1f, 0.3f, 0f, 1f); 
     private Material activeMaterial;
 
+    public Ingredient item;
     public void PemanasanBesi()
     {
         activeMaterial = new Material(BesiPanasMaterial);
