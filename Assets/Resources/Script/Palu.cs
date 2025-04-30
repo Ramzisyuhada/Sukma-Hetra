@@ -1,74 +1,56 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Palu : MonoBehaviour
 {
-
     [SerializeField] private Transform Position;
     [SerializeField] private float Radius = 0.1f;
     [SerializeField] private LayerMask Layer;
-
     [SerializeField] private AudioSource Sparks;
-
     [SerializeField] private float KekuatanMemalu = 0.1f;
-    Rigidbody rb;
+
+    public Rigidbody rb;
+
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-    }
-
-    void Update()
-    {
-        Memalu();
       
-
-
     }
 
-
-    void Memalu()
+    private void OnTriggerEnter(Collider other)
     {
+        //if (rb == null) return;
 
-
-        //if (Physics.CheckSphere(Position.position, Radius, Layer) && rb.velocity.magnitude > KekuatanMemalu) 
-        //{
-
-        //        Debug.Log("Hello world");
-        //        Sparks.volume = Random.Range(0.3f, 1.3f);
-        //        Sparks.pitch = Random.Range(0.5f, 1.5f);
-        //        Sparks.Play();
-
-        //}
-
-        Collider[] hits = Physics.OverlapSphere(Position.position, Radius, Layer);
-
-        foreach (Collider col in hits)
+        if (((1 << other.gameObject.layer) & Layer) != 0)
         {
+            Debug.Log("Hello world");
             if (rb.velocity.magnitude > KekuatanMemalu)
             {
-                Debug.Log("Palu mengenai: " + col.name);
+                Debug.Log("Palu mengenai: " + other.name);
 
-                Sparks.volume = Random.Range(0.3f, 1.3f);
-                Sparks.pitch = Random.Range(0.5f, 1.5f);
-                Sparks.Play();
+                // Putar suara jika belum diputar
+                if (Sparks != null)
+                {
+                    Sparks.volume = Random.Range(0.3f, 1.3f);
+                    Sparks.pitch = Random.Range(0.5f, 1.5f);
+                    Sparks.Play();
+                }
 
-                Vector3 scale = col.transform.localScale;
+                // Ubah skala objek yang terkena
+                Vector3 scale = other.transform.localScale;
 
                 scale.x += 0.05f;
                 scale.y -= 0.03f;
                 scale.z += 0.05f;
 
-                scale.x = Mathf.Min(scale.x, 0.5f);  
-                scale.y = Mathf.Max(scale.y, 0.05f); 
-                scale.z = Mathf.Min(scale.z, 0.5f);  
+                // Batasi ukuran maksimal/minimal
+                scale.x = Mathf.Min(scale.x, 0.5f);
+                scale.y = Mathf.Max(scale.y, 0.05f);
+                scale.z = Mathf.Min(scale.z, 0.5f);
 
-                col.transform.localScale = scale;
-
+                other.transform.localScale = scale;
             }
         }
-
     }
 
     void OnDrawGizmosSelected()
@@ -79,5 +61,4 @@ public class Palu : MonoBehaviour
             Gizmos.DrawWireSphere(Position.position, Radius);
         }
     }
-
 }

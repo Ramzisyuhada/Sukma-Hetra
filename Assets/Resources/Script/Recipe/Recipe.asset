@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: Recipe
   m_EditorClassIdentifier: 
   recipeName: 
-  requiredMaterials: []
+  requiredMaterials:
+  - item: {fileID: 11400000, guid: a1cac74ba581af4439f8f373cb4f8e94, type: 2}
+    quantity: 1
+  - item: {fileID: 11400000, guid: aa79489a615cb6448aac28bfa415eddc, type: 2}
+    quantity: 1
   resultItem: {fileID: 0}
   resultAmount: 1

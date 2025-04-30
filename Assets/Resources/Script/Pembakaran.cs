@@ -10,7 +10,6 @@ public class Pembakaran : MonoBehaviour
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -20,10 +19,14 @@ public class Pembakaran : MonoBehaviour
         if (!isHeatingStarted && other.GetComponent<Besi>() != null)
         {
             other.GetComponent<Besi>().PemanasanBesi();
-            other.GetComponent<Besi>().item.item.NamaBarang = JenisBarangEnum.BesiPanas;
+            ItemData[] allItems = Resources.LoadAll<ItemData>("Script/ItemType");
 
-            //other.GetComponent<Besi>().Jenis = JenisBarangEnum.BesiPanas;
-            isHeatingStarted = true; // Set isHeatingStarted menjadi true agar tidak dipanggil lagi
+            foreach (ItemData item in allItems)
+            {
+                if(item.Equals("BesiPanas"))other.GetComponent<Besi>().item.item = item; 
+              Debug.Log("Nama Barang: " + item.NamaBarang);
+            }            
+            isHeatingStarted = true; 
         }
     }
     private void OnTriggerEnter(Collider other)
