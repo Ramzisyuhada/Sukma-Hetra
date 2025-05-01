@@ -7,5 +7,7 @@ using UnityEngine;
 
 public class ItemData : ScriptableObject
 {
-    public JenisBarangEnum NamaBarang;
+    public JenisBarangEnum itemType;
+    public int quantity;
+
 }

@@ -7,6 +7,7 @@ public enum JenisBarangEnum
     Besi,
     BesiPanas,
     Kayu,
-    BesiAsah
+    BesiAsah,
+    Pedang
      
 }

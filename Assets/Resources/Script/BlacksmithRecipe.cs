@@ -6,13 +6,11 @@ using UnityEngine;
 
 
 
-[Serializable]
 
 [CreateAssetMenu(fileName = "PandaiBesi", menuName = "Recipe/PandaiBesi")]
 public class BlacksmithRecipe : ScriptableObject
 {
-    public string recipeName;
-    public Ingredient[] requiredMaterials;
+    public List<MaterialRequirement> requiredMaterials;
     public ItemData resultItem;
-    public int resultAmount = 1;
+    public GameObject resultPrefab;
 }

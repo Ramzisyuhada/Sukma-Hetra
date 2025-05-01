@@ -24,7 +24,7 @@ public class Pembakaran : MonoBehaviour
             foreach (ItemData item in allItems)
             {
                 if(item.Equals("BesiPanas"))other.GetComponent<Besi>().item.item = item; 
-              Debug.Log("Nama Barang: " + item.NamaBarang);
+              Debug.Log("Nama Barang: " + item.itemType);
             }            
             isHeatingStarted = true; 
         }

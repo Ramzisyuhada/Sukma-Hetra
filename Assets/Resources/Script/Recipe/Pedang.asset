@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30613c8d2d2f95148a1a1bbb266842e1, type: 3}
-  m_Name: Recipe
+  m_Name: Pedang
   m_EditorClassIdentifier: 
-  recipeName: 
   requiredMaterials:
   - item: {fileID: 11400000, guid: a1cac74ba581af4439f8f373cb4f8e94, type: 2}
     quantity: 1
   - item: {fileID: 11400000, guid: aa79489a615cb6448aac28bfa415eddc, type: 2}
     quantity: 1
-  resultItem: {fileID: 0}
-  resultAmount: 1
+  resultItem: {fileID: 11400000, guid: 0b157c15b1866fc429b24140e2929e9a, type: 2}
+  resultPrefab: {fileID: 2639112768765881112, guid: fc0e40f2a86af1b42bc29f1e7796c63b,
+    type: 3}

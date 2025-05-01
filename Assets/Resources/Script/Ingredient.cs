@@ -6,8 +6,9 @@ using UnityEngine;
 
 [Serializable]
 
-public class Ingredient 
+public class MaterialRequirement
 {
     public ItemData item;
     public int quantity;
+
 }

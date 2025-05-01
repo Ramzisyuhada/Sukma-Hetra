@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c681102e0c3393640a41ba127f03fc5b, type: 3}
   m_Name: Besi
   m_EditorClassIdentifier: 
-  NamaBarang: 0
+  itemType: 0
+  quantity: 1

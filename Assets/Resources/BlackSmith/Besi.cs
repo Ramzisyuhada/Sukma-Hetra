@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 
-public class Besi : MonoBehaviour
+public class Besi : ItemHolder
 {
     public Material BesiDinginMaterial, BesiPanasMaterial;
 
@@ -15,7 +15,21 @@ public class Besi : MonoBehaviour
     private Color hotColor = new Color(1f, 0.3f, 0f, 1f); 
     private Material activeMaterial;
 
-    public Ingredient item;
+    public MaterialRequirement item;
+
+    void Awake()
+    {
+        if (item != null && item.item != null)
+        {
+            Debug.Log(item.item.itemType);
+            this.itemData = item.item;
+        }
+        else
+        {
+            Debug.LogWarning($"Item pada {gameObject.name} belum diatur dengan benar!");
+        }
+    }
+
     public void PemanasanBesi()
     {
         activeMaterial = new Material(BesiPanasMaterial);
