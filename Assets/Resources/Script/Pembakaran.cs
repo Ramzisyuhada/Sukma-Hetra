@@ -1,5 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Pembakaran : MonoBehaviour
@@ -18,17 +19,24 @@ public class Pembakaran : MonoBehaviour
     {
         if (!isHeatingStarted && other.GetComponent<Besi>() != null)
         {
-            other.GetComponent<Besi>().PemanasanBesi();
-            ItemData[] allItems = Resources.LoadAll<ItemData>("Script/ItemType");
-
-            foreach (ItemData item in allItems)
+            ItemHolder itemHolder = other.GetComponent<ItemHolder>();
+            if (itemHolder != null)
             {
-                if(item.Equals("BesiPanas"))other.GetComponent<Besi>().item.item = item; 
-              Debug.Log("Nama Barang: " + item.itemType);
-            }            
-            isHeatingStarted = true; 
+                // 🔥 Ubah itemData ke BesiPanas sebelum masuk ke container
+                itemHolder.itemData = ItemDatabase.Instance.GetByType(JenisBarangEnum.BesiPanas);
+                Debug.Log("♨️ Item diubah ke: " + itemHolder.itemData.name);
+            }
+
+            // Panggil efek pemanasan dll
+            other.GetComponent<Besi>().PemanasanBesi();
+
+            isHeatingStarted = true;
         }
     }
+
+
+
+
     private void OnTriggerEnter(Collider other)
     {
 

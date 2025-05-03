@@ -23,7 +23,6 @@ public class Palu : MonoBehaviour
 
         if (((1 << other.gameObject.layer) & Layer) != 0)
         {
-            Debug.Log("Hello world");
             if (rb.velocity.magnitude > KekuatanMemalu)
             {
                 Debug.Log("Palu mengenai: " + other.name);

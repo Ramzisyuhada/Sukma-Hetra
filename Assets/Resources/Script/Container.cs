@@ -1,36 +1,55 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class Container : MonoBehaviour
 {
     public List<BlacksmithRecipe> recipes;
     private List<ItemHolder> currentItems = new List<ItemHolder>();
+    public GameObject particle;
 
-
+    [SerializeField] AudioSource audio;
     private void Start()
     {
-        currentItems.Add(GetComponentInParent<ItemHolder>());
-        Debug.Log(currentItems.Count);
+      currentItems.Add(transform.gameObject.GetComponentInParent<ItemHolder>());
     }
 
     private void OnTriggerEnter(Collider other)
     {
         ItemHolder item = other.GetComponent<ItemHolder>();
-        if (item != null && !currentItems.Contains(item))
+
+        // Hanya masukkan item yang sedang dipegang
+        if (item != null && item.currentInteractor != null && !currentItems.Contains(item))
         {
+            Debug.Log(other.GetComponent<ItemHolder>().itemData.itemType);
+
+            audio.Play();
+
             currentItems.Add(item);
             PrintCurrentItems();
 
-            TryCraft();
+            TryCraft(); // Coba craft setelah menambahkan item baru
         }
     }
 
     void TryCraft()
     {
+        // Pastikan semua item sedang dipegang
+        foreach (var item in currentItems)
+        {
+            if (item.currentInteractor == null)
+            {
+                Debug.Log("❌ Tidak semua item sedang dipegang. Crafting dibatalkan.");
+                return;
+            }
+        }
+
         foreach (var recipe in recipes)
         {
             if (RecipeMatches(recipe, currentItems))
             {
+                XRBaseInteractor interactorYangPegang = currentItems[currentItems.Count - 1].currentInteractor;
+
                 foreach (var req in recipe.requiredMaterials)
                 {
                     int needed = req.quantity;
@@ -38,22 +57,34 @@ public class Container : MonoBehaviour
                     {
                         if (currentItems[i].itemData == req.item)
                         {
+                            if (audio != null)
+                                audio.Play();
                             Destroy(currentItems[i].gameObject);
                             currentItems.RemoveAt(i);
                             needed--;
                         }
                     }
                 }
+              
+                GameObject result = Instantiate(recipe.resultPrefab, transform.position + Vector3.up, Quaternion.identity);
+                Destroy(Instantiate(particle,result.transform.position, Quaternion.identity),2f);   
+                if (interactorYangPegang != null)
+                {
+                    XRGrabInteractable grab = result.GetComponent<XRGrabInteractable>();
+                    if (grab != null)
+                    {
+                        interactorYangPegang.interactionManager.SelectEnter(interactorYangPegang, grab);
+                    }
+                }
 
-                Instantiate(recipe.resultPrefab, transform.position + Vector3.up, Quaternion.identity);
-                Debug.Log("Berhasil craft: " + recipe.resultItem.name);
-                return; 
+                Debug.Log("✅ Berhasil craft: " + recipe.resultItem.name);
+                return;
             }
         }
-
-        Debug.Log("❌ Crafting gagal: tidak ada resep yang cocok dengan kombinasi item saat ini.");
-
+        currentItems.Clear();
+        Debug.Log("❌ Crafting gagal: tidak ada resep yang cocok.");
     }
+
     void PrintCurrentItems()
     {
         Debug.Log("🧾 Isi container saat ini:");

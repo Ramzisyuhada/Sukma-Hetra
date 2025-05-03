@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c681102e0c3393640a41ba127f03fc5b, type: 3}
   m_Name: BesiPanas
   m_EditorClassIdentifier: 
-  itemType: 0
+  itemType: 1
   quantity: 1
