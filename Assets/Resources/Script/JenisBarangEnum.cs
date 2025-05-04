@@ -10,6 +10,12 @@ public enum JenisBarangEnum
     BesiPanjang,
     BesiAsah,
     Pisau,
+    Bucket,        
+    Hoe,            
+    Sickle,        
+    Spade,          
+    SpadingFork   , 
+        Batangkayu
 
-     
+
 }

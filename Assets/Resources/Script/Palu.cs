@@ -1,6 +1,7 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.ParticleSystem;
 
 public class Palu : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class Palu : MonoBehaviour
     [SerializeField] private LayerMask Layer;
     [SerializeField] private AudioSource Sparks;
     [SerializeField] private float KekuatanMemalu = 0.1f;
-
+    [SerializeField] private GameObject particle;
     public Rigidbody rb;
 
     void Start()
@@ -19,38 +20,58 @@ public class Palu : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        //if (rb == null) return;
-
         if (((1 << other.gameObject.layer) & Layer) != 0)
         {
             if (rb.velocity.magnitude > KekuatanMemalu)
             {
-                Debug.Log("Palu mengenai: " + other.name);
+                Vector3 contactPoint = other.ClosestPoint(Position.position);
+                Vector3 center = other.bounds.center;
+                Vector3 localHitPoint = other.transform.InverseTransformPoint(contactPoint);
+                Vector3 hitDirection = localHitPoint.normalized;
+                if (particle != null)
+                {
+                    Destroy(Instantiate(particle, contactPoint, Quaternion.identity), 0.5f);
+                }
 
-                // Putar suara jika belum diputar
                 if (Sparks != null)
                 {
+                    Sparks.transform.position = contactPoint;
                     Sparks.volume = Random.Range(0.3f, 1.3f);
                     Sparks.pitch = Random.Range(0.5f, 1.5f);
                     Sparks.Play();
                 }
 
-                // Ubah skala objek yang terkena
                 Vector3 scale = other.transform.localScale;
 
-                scale.x += 0.05f;
-                scale.y -= 0.03f;
-                scale.z += 0.05f;
+                if (Mathf.Abs(hitDirection.y) > Mathf.Abs(hitDirection.x) && Mathf.Abs(hitDirection.y) > Mathf.Abs(hitDirection.z))
+                {
+                    scale.y -= 0.03f;
+                    scale.x += 0.02f;
+                    scale.z += 0.02f;
+                }
+                else if (Mathf.Abs(hitDirection.x) > Mathf.Abs(hitDirection.z))
+                {
+                    scale.x -= 0.03f;
+                    scale.y += 0.02f;
+                    scale.z += 0.02f;
+                }
+                else
+                {
+                    scale.z -= 0.03f;
+                    scale.x += 0.02f;
+                    scale.y += 0.02f;
+                }
 
-                // Batasi ukuran maksimal/minimal
-                scale.x = Mathf.Min(scale.x, 0.5f);
-                scale.y = Mathf.Max(scale.y, 0.05f);
-                scale.z = Mathf.Min(scale.z, 0.5f);
+                // Batasi ukuran minimum dan maksimum
+                scale.x = Mathf.Clamp(scale.x, 0.05f, 0.5f);
+                scale.y = Mathf.Clamp(scale.y, 0.05f, 0.5f);
+                scale.z = Mathf.Clamp(scale.z, 0.05f, 0.5f);
 
                 other.transform.localScale = scale;
             }
         }
     }
+
 
     void OnDrawGizmosSelected()
     {
