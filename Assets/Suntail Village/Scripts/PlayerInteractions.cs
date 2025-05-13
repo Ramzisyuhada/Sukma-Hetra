@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
+using UnityEngine.Windows.WebCam;
 
 //Interacting with objects and doors
 namespace Suntail
@@ -89,6 +91,36 @@ namespace Suntail
                     if (Input.GetKeyDown(interactionKey))
                     {
                         _lookDoor.PlayDoorAnimation();
+                    }
+                }else if (interactionHit.collider.CompareTag("Video"))
+                {
+
+                    if (Input.GetKeyDown(interactionKey))
+                    {
+                        if (interactionHit.collider.gameObject.GetComponentInChildren<VideoPlayer>() != null)
+                        {
+                            if (!interactionHit.collider.gameObject.GetComponentInChildren<VideoPlayer>().isPlaying)
+                            {
+                                interactionHit.collider.gameObject.GetComponentInChildren<VideoPlayer>().Play();
+
+
+                            }
+                            else
+                            {
+                                interactionHit.collider.gameObject.GetComponentInChildren<VideoPlayer>().Stop();
+
+                            }
+                        }
+                    }
+                   
+                }else if (interactionHit.collider.CompareTag("PPT"))
+                {
+                    if (Input.GetKeyDown(interactionKey))
+                    {
+                        if (interactionHit.collider.gameObject.GetComponentInChildren<ControllerPPT>() != null)
+                        {
+                            interactionHit.collider.gameObject.GetComponentInChildren<ControllerPPT>().NextPPT();
+                        }
                     }
                 }
             }

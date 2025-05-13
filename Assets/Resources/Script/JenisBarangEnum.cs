@@ -15,7 +15,8 @@ public enum JenisBarangEnum
     Sickle,        
     Spade,          
     SpadingFork   , 
-        Batangkayu
+        Batangkayu,
+        KepalaCangkul
 
 
 }

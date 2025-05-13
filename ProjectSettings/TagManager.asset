@@ -7,6 +7,8 @@ TagManager:
   - Besi
   - Item
   - Door
+  - Video
+  - PPT
   layers:
   - Default
   - TransparentFX
@@ -18,7 +20,7 @@ TagManager:
   - LeftHandPhysics
   - RightHandPhysics
   - Grid
-  - 
+  - Video
   - 
   - 
   - 
