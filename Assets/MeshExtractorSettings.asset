@@ -23,4 +23,4 @@ MonoBehaviour:
   SelectionColorAlpha: 0.5
   WarnAboutOldSelections: 1
   ClearOldSelectionsAutomatically: 0
-  WindowPosition: {x: 303.5, y: 69}
+  WindowPosition: {x: -1, y: -1}
