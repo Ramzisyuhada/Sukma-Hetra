@@ -17,8 +17,12 @@ TagManager:
   - Water
   - UI
   - Besi
-  - LeftHandPhysics
-  - RightHandPhysics
+  - 
+  - Player
+  - DynamicPose
+  - 
+  - 
+  - 
   - Grid
   - Video
   - 
@@ -26,12 +30,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Grabbable
+  - Hand
   - 
   - 
   - 
