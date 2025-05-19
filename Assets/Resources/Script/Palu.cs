@@ -20,10 +20,13 @@ public class Palu : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (((1 << other.gameObject.layer) & Layer) != 0)
+
+        if (((1 << other.gameObject.layer) & Layer) != 0 || other.gameObject.CompareTag("Besi"))
         {
+
             if (rb.velocity.magnitude > KekuatanMemalu)
             {
+
                 Vector3 contactPoint = other.ClosestPoint(Position.position);
                 Vector3 center = other.bounds.center;
                 Vector3 localHitPoint = other.transform.InverseTransformPoint(contactPoint);

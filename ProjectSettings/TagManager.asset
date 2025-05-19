@@ -9,6 +9,7 @@ TagManager:
   - Door
   - Video
   - PPT
+  - BesiPanas
   layers:
   - Default
   - TransparentFX

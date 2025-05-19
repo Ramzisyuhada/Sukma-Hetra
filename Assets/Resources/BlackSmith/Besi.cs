@@ -21,7 +21,6 @@ public class Besi : ItemHolder
     {
         if (item != null && item.item != null)
         {
-            Debug.Log(item.item.itemType);
             this.itemData = item.item;
         }
         else
