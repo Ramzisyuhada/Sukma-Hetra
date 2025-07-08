@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
-using UnityEngine.Windows.WebCam;
 
 //Interacting with objects and doors
 namespace Suntail

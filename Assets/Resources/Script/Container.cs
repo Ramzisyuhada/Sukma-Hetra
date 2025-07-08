@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HurricaneVR.Framework.Core.Grabbers;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -18,7 +19,6 @@ public class Container : MonoBehaviour
     {
         ItemHolder item = other.GetComponent<ItemHolder>();
 
-        // Hanya masukkan item yang sedang dipegang
         if (item != null && item.currentInteractor != null && !currentItems.Contains(item))
         {
             Debug.Log(other.GetComponent<ItemHolder>().itemData.itemType);
@@ -28,13 +28,12 @@ public class Container : MonoBehaviour
             currentItems.Add(item);
             PrintCurrentItems();
 
-            TryCraft(); // Coba craft setelah menambahkan item baru
+            TryCraft();
         }
     }
 
     void TryCraft()
     {
-        // Pastikan semua item sedang dipegang
         foreach (var item in currentItems)
         {
             if (item.currentInteractor == null)
@@ -48,7 +47,7 @@ public class Container : MonoBehaviour
         {
             if (RecipeMatches(recipe, currentItems))
             {
-                XRBaseInteractor interactorYangPegang = currentItems[currentItems.Count - 1].currentInteractor;
+                HVRGrabberBase interactorYangPegang = currentItems[currentItems.Count - 1].currentInteractor;
 
                 foreach (var req in recipe.requiredMaterials)
                 {
@@ -73,7 +72,9 @@ public class Container : MonoBehaviour
                     XRGrabInteractable grab = result.GetComponent<XRGrabInteractable>();
                     if (grab != null)
                     {
-                        interactorYangPegang.interactionManager.SelectEnter(interactorYangPegang, grab);
+                        Debug.Log("Hello world");
+/*                        interactorYangPegang.interactionManager.SelectEnter(interactorYangPegang, grab);
+*/                  
                     }
                 }
 

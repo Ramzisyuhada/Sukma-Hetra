@@ -17,15 +17,28 @@ public class ControllerPPT : MonoBehaviour
 
     public void NextPPT()
     {
-        if (index < Ppt.Length)
+        if (Ppt.Length == 0) return;
+
+        index++;
+        if (index >= Ppt.Length)
         {
-            index++;
-            GetComponent<MeshRenderer>().material = Ppt[index];
+            index = 0; // kembali ke awal
         }
-        else
+
+        GetComponent<MeshRenderer>().material = Ppt[index];
+    }
+
+    public void PrevPPT()
+    {
+        if (Ppt.Length == 0) return;
+
+        index--;
+        if (index < 0)
         {
-            index = 0;
+            index = Ppt.Length - 1; // kembali ke slide terakhir
         }
+
+        GetComponent<MeshRenderer>().material = Ppt[index];
     }
 
 
