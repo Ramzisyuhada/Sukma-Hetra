@@ -158,7 +158,7 @@ QualitySettings:
     excludedTargetPlatforms: []
   m_TextureMipmapLimitGroupNames: []
   m_PerPlatformDefaultQuality:
-    Android: 1
+    Android: 0
     CloudRendering: 2
     GameCoreScarlett: 2
     GameCoreXboxOne: 2
@@ -168,7 +168,7 @@ QualitySettings:
     PS5: 2
     Server: 0
     Stadia: 2
-    Standalone: 2
+    Standalone: 0
     WebGL: 1
     Windows Store Apps: 2
     XboxOne: 2
