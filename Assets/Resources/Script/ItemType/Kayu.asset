@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c681102e0c3393640a41ba127f03fc5b, type: 3}
   m_Name: Kayu
   m_EditorClassIdentifier: 
-  itemType: 5
+  itemType: 2
+  icon: {fileID: 0}
+  defaultPrefab: {fileID: 0}
   quantity: 1

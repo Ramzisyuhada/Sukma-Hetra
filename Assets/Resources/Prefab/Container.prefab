@@ -158,7 +158,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2.28, y: 2.28, z: 2.28}
+  m_LocalScale: {x: 11.400002, y: 0.912, z: 11.400002}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5695466055491575914}
@@ -249,6 +249,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recipes:
   - {fileID: 11400000, guid: 512ea4b09347ad3489978705a631de2e, type: 2}
+  - {fileID: 11400000, guid: 323a12bb9ed39874799594c8d3b59544, type: 2}
+  requireReleaseInsideZone: 1
+  craftDebounceSeconds: 1
   particle: {fileID: 5700784828077083704, guid: ed962e35f7fa6f34f8d27aa6d19ea293,
     type: 3}
   audio: {fileID: 1180223626905998075}

@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public enum JenisBarangEnum
 {
     Besi,
@@ -10,13 +6,11 @@ public enum JenisBarangEnum
     BesiPanjang,
     BesiAsah,
     Pisau,
-    Bucket,        
-    Hoe,            
-    Sickle,        
-    Spade,          
-    SpadingFork   , 
-        Batangkayu,
-        KepalaCangkul
-
-
+    Bucket,
+    Hoe,
+    Sickle,
+    Spade,
+    SpadingFork,
+    Batangkayu,
+    KepalaCangkul
 }

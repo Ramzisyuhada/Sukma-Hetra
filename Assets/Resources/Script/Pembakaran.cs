@@ -5,41 +5,26 @@ using UnityEngine;
 
 public class Pembakaran : MonoBehaviour
 {
-    private bool isHeatingStarted = false;
-    void Start()
+    [Tooltip("Durasi panas override (<=0 = pakai default HeatedMetal)")]
+    public float overrideDuration = -1f;
+
+    public void TriggerHeat(GameObject target)
     {
-        
+        if (!target) return;
+
+        var heat = target.GetComponent<HeatedMetal>();
+        if (heat) heat.Heat(overrideDuration);
+
+        var vis = target.GetComponent<ItemVisualController>();
+        if (vis && vis.supportsHeating) vis.Heat();
     }
 
-    void Update()
-    {
-        
-    }
-    private void OnTriggerStay(Collider other)
-    {
-        if (!isHeatingStarted && other.GetComponent<Besi>() != null)
-        {
-            ItemHolder itemHolder = other.GetComponent<ItemHolder>();
-            if (itemHolder != null)
-            {
-                // 🔥 Ubah itemData ke BesiPanas sebelum masuk ke container
-                itemHolder.itemData = ItemDatabase.Instance.GetByType(JenisBarangEnum.BesiPanas);
-                Debug.Log("♨️ Item diubah ke: " + itemHolder.itemData.name);
-            }
-
-            // Panggil efek pemanasan dll
-            other.GetComponent<Besi>().PemanasanBesi();
-
-            isHeatingStarted = true;
-        }
-    }
-
-
-
-
+    // Contoh trigger otomatis:
     private void OnTriggerEnter(Collider other)
     {
 
-       
+        other.GetComponent<HeatedMetal>().IsHot = true;
+        // filter sesuai kebutuhanmu (tag/layer)
+        TriggerHeat(other.gameObject);
     }
 }

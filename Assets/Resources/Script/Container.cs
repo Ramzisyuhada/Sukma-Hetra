@@ -1,132 +1,219 @@
-﻿using HurricaneVR.Framework.Core.Grabbers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
+using HurricaneVR.Framework.Components;          // HVRGrabbable
+using HurricaneVR.Framework.Core.Grabbers;       // HVRHandGrabber, HVRGrabberBase
+using HurricaneVR.Framework.Shared;              // HVRGrabTrigger
+using HurricaneVR.Framework.Core.HandPoser;      // HVRPosableGrabPoint
+using HurricaneVR.Framework.Core;
 
+[RequireComponent(typeof(Collider))]
 public class Container : MonoBehaviour
 {
-    public List<BlacksmithRecipe> recipes;
-    private List<ItemHolder> currentItems = new List<ItemHolder>();
-    public GameObject particle;
+    [Header("Crafting")]
+    [Tooltip("Daftar resep yang bisa dibuat di container ini.")]
+    public List<BlacksmithRecipe> recipes = new List<BlacksmithRecipe>();
 
-    [SerializeField] AudioSource audio;
-    private void Start()
+    [Tooltip("Semua bahan harus sudah dipegang terus-menerus minimal ini (detik) sebelum crafting.")]
+    [Min(0f)] public float holdRequiredSeconds = 0.25f;
+
+    [Tooltip("Bahan dianggap disatukan jika jarak ANTAR bahan <= nilai ini (meter).")]
+    public float craftDistance = 0.30f;
+
+    [Header("FX")]
+    public GameObject particle;
+    [SerializeField] private AudioSource audio;
+
+    [Header("Auto-Grab Result (HVR)")]
+    public HVRGrabTrigger resultGrabTrigger = HVRGrabTrigger.ManualRelease;
+    public HVRPosableGrabPoint resultGrabPoint;    // boleh null
+
+    // ==== STATE ====
+    private readonly HashSet<ItemHolder> _itemsInZone = new HashSet<ItemHolder>();
+    private HVRGrabberBase _lastHvrInteractor;
+
+    private void Awake()
     {
-      currentItems.Add(transform.gameObject.GetComponentInParent<ItemHolder>());
+        var col = GetComponent<Collider>();
+        if (!col.isTrigger)
+            Debug.LogWarning("[Container] Collider sebaiknya isTrigger = true (bubble area).");
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        ItemHolder item = other.GetComponent<ItemHolder>();
+        // Penting: collider yang masuk sering child; ambil ItemHolder di parent.
+        var it = other.GetComponentInParent<ItemHolder>();
+        if (!it) return;
 
-        if (item != null && item.currentInteractor != null && !currentItems.Contains(item))
-        {
-            Debug.Log(other.GetComponent<ItemHolder>().itemData.itemType);
+        // hindari menghitung dirinya sendiri (kalau Container ini child item)
+        if (it.gameObject == gameObject || it.transform.IsChildOf(transform)) return;
 
-            audio.Play();
-
-            currentItems.Add(item);
-            PrintCurrentItems();
-
-            TryCraft();
-        }
+        _itemsInZone.Add(it);
     }
 
-    void TryCraft()
+    private void OnTriggerExit(Collider other)
     {
-        foreach (var item in currentItems)
+        var it = other.GetComponentInParent<ItemHolder>();
+        if (!it) return;
+
+        _itemsInZone.Remove(it);
+    }
+
+    private void Update()
+    {
+        // Simpan tangan terakhir dari item yang sedang dipegang (buat auto-grab hasil)
+        foreach (var it in _itemsInZone)
         {
-            if (item.currentInteractor == null)
+            if (!it) continue;
+
+            // Debug: lihat nilai IsHeld sekarang
+            // Debug.Log($"[Container] {it.name} IsHeld={it.IsHeld} interactor={it.currentInteractor?.name}");
+
+            if (it.IsHeld && it.currentInteractor != null)
             {
-                Debug.Log("❌ Tidak semua item sedang dipegang. Crafting dibatalkan.");
-                return;
+                _lastHvrInteractor = it.currentInteractor;
             }
         }
 
+        TryCraft_HeldOnlyAndClose();
+    }
+
+    /// <summary>
+    /// Craft hanya jika: semua material yang dibutuhkan SEDANG DIPEGANG,
+    /// masing-masing sudah dipegang >= holdRequiredSeconds, saling berdekatan (<= craftDistance),
+    /// dan cocok dengan salah satu resep.
+    /// </summary>
+    private void TryCraft_HeldOnlyAndClose()
+    {
+        if (_itemsInZone.Count == 0) return;
+
+        // 1) Kumpulkan kandidat yang sedang dipegang dan cukup lama
+        var eligible = new List<ItemHolder>();
+        var counts = new Dictionary<ItemData, int>();
+
+        foreach (var it in _itemsInZone)
+        {
+            if (it == null || it.itemData == null) continue;
+
+            // Abaikan yang belum memenuhi durasi, jangan batalkan seluruh proses
+            if (!it.HeldFor(holdRequiredSeconds)) continue;
+
+            eligible.Add(it);
+            counts[it.itemData] = counts.TryGetValue(it.itemData, out var n) ? n + 1 : 1;
+        }
+
+        if (eligible.Count < 2) return; // minimal 2 item dipegang
+
+        // 2) Harus saling berdekatan (semua pasangan dalam jarak <= craftDistance)
+        if (!AllCloseEnough(eligible, craftDistance))
+            return;
+
+        // 3) Cek resep pakai material eligible
         foreach (var recipe in recipes)
         {
-            if (RecipeMatches(recipe, currentItems))
+            if (!RecipeMatches(recipe, counts)) continue;
+
+            // ===== Konsumsi bahan sesuai jumlah resep =====
+            PlayAudioSafe();
+            Consume(recipe, eligible);
+
+            // ===== Spawn hasil di titik tengah =====
+            var pos = MidPoint(eligible);
+            var result = Instantiate(recipe.resultPrefab, pos, Quaternion.identity);
+
+            if (particle)
             {
-                HVRGrabberBase interactorYangPegang = currentItems[currentItems.Count - 1].currentInteractor;
-
-                foreach (var req in recipe.requiredMaterials)
-                {
-                    int needed = req.quantity;
-                    for (int i = currentItems.Count - 1; i >= 0 && needed > 0; i--)
-                    {
-                        if (currentItems[i].itemData == req.item)
-                        {
-                            if (audio != null)
-                                audio.Play();
-                            Destroy(currentItems[i].gameObject);
-                            currentItems.RemoveAt(i);
-                            needed--;
-                        }
-                    }
-                }
-              
-                GameObject result = Instantiate(recipe.resultPrefab, transform.position + Vector3.up, Quaternion.identity);
-                Destroy(Instantiate(particle,result.transform.position, Quaternion.identity),2f);   
-                if (interactorYangPegang != null)
-                {
-                    XRGrabInteractable grab = result.GetComponent<XRGrabInteractable>();
-                    if (grab != null)
-                    {
-                        Debug.Log("Hello world");
-/*                        interactorYangPegang.interactionManager.SelectEnter(interactorYangPegang, grab);
-*/                  
-                    }
-                }
-
-                Debug.Log("✅ Berhasil craft: " + recipe.resultItem.name);
-                return;
+                var fx = Instantiate(particle, pos, Quaternion.identity);
+                Destroy(fx, 2f);
             }
-        }
-        currentItems.Clear();
-        Debug.Log("❌ Crafting gagal: tidak ada resep yang cocok.");
-    }
 
-    void PrintCurrentItems()
-    {
-        Debug.Log("🧾 Isi container saat ini:");
-        foreach (var item in currentItems)
-        {
-            string name = item != null && item.itemData != null ? item.itemData.name : "Item NULL";
-            Debug.Log("- " + name);
+            // ===== Auto-grab hasil ke tangan terakhir =====
+            AutoAttachResult(result);
+
+            Debug.Log($"✅ Craft berhasil (held-only): {recipe.resultItem?.name ?? result.name}");
+            return;
         }
     }
 
-    bool RecipeMatches(BlacksmithRecipe recipe, List<ItemHolder> items)
+    private bool AllCloseEnough(List<ItemHolder> items, float maxDist)
     {
-        Dictionary<ItemData, int> itemCounts = new Dictionary<ItemData, int>();
-
-        foreach (var item in items)
+        for (int i = 0; i < items.Count; i++)
         {
-            if (item == null || item.itemData == null)
+            for (int j = i + 1; j < items.Count; j++)
             {
-                Debug.LogWarning("ItemHolder atau itemData null ditemukan saat pengecekan resep!");
-                continue;
+                if (!items[i] || !items[j]) continue;
+                if (Vector3.Distance(items[i].transform.position, items[j].transform.position) > maxDist)
+                    return false;
             }
-
-            if (itemCounts.ContainsKey(item.itemData))
-                itemCounts[item.itemData]++;
-            else
-                itemCounts[item.itemData] = 1;
         }
-
-        foreach (var req in recipe.requiredMaterials)
-        {
-            if (req.item == null)
-            {
-                Debug.LogWarning("Ada item null di daftar requiredMaterials recipe!");
-                return false;
-            }
-
-            if (!itemCounts.ContainsKey(req.item) || itemCounts[req.item] < req.quantity)
-                return false;
-        }
-
         return true;
     }
 
+    private void Consume(BlacksmithRecipe recipe, List<ItemHolder> pool)
+    {
+        var work = new List<ItemHolder>(pool);
+        foreach (var req in recipe.requiredMaterials)
+        {
+            if (req == null || req.item == null) continue;
+
+            int need = Mathf.Max(1, req.quantity);
+            for (int i = work.Count - 1; i >= 0 && need > 0; i--)
+            {
+                var h = work[i];
+                if (h != null && h.itemData == req.item)
+                {
+                    _itemsInZone.Remove(h);
+                    Destroy(h.gameObject);
+                    work.RemoveAt(i);
+                    need--;
+                }
+            }
+        }
+    }
+
+    private Vector3 MidPoint(List<ItemHolder> items)
+    {
+        Vector3 sum = Vector3.zero; int n = 0;
+        foreach (var it in items)
+        {
+            if (!it) continue;
+            sum += it.transform.position; n++;
+        }
+        return n > 0 ? sum / n : transform.position;
+    }
+
+    private void AutoAttachResult(GameObject result)
+    {
+        if (!result) return;
+
+        if (_lastHvrInteractor is HVRHandGrabber hand && result.TryGetComponent(out HVRGrabbable hvrGrab))
+        {
+            if (hand.IsGrabbing) hand.ForceRelease();                 // lepas yang lama kalau perlu
+            hand.Grab(hvrGrab, resultGrabTrigger, resultGrabPoint);   // langsung pegang hasil
+        }
+        else if (_lastHvrInteractor is HVRHandGrabber lastHand)
+        {
+            // fallback: taruh dekat tangan supaya mudah di-grip manual
+            result.transform.SetPositionAndRotation(lastHand.transform.position, lastHand.transform.rotation);
+        }
+    }
+
+    private bool RecipeMatches(BlacksmithRecipe recipe, Dictionary<ItemData, int> counts)
+    {
+        if (recipe == null || recipe.requiredMaterials == null || recipe.requiredMaterials.Count == 0)
+            return false;
+
+        foreach (var req in recipe.requiredMaterials)
+        {
+            if (req == null || req.item == null) return false;
+            int need = Mathf.Max(1, req.quantity);
+            if (!counts.TryGetValue(req.item, out int have) || have < need)
+                return false;
+        }
+        return true;
+    }
+
+    private void PlayAudioSafe()
+    {
+        if (audio && !audio.isPlaying) audio.Play();
+    }
 }

@@ -1,87 +1,80 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using static UnityEngine.ParticleSystem;
+﻿using UnityEngine;
 
 public class Palu : MonoBehaviour
 {
-    [SerializeField] private Transform Position;
-    [SerializeField] private float Radius = 0.1f;
-    [SerializeField] private LayerMask Layer;
-    [SerializeField] private AudioSource Sparks;
-    [SerializeField] private float KekuatanMemalu = 0.1f;
-    [SerializeField] private GameObject particle;
-    public Rigidbody rb;
+    [Header("Deteksi Tumbukan")]
+    [SerializeField] private Transform hitPosition;     // titik referensi di kepala palu
+    [SerializeField] private float minHammerSpeed = 0.1f;
+    public Rigidbody rb;                                // rigidbody palu
 
-    void Start()
-    {
-      
-    }
+    [Header("Filter Target")]
+    [SerializeField] private LayerMask targetLayers;    // layer besi
+    [SerializeField] private string targetTag = "Besi"; // atau kosongkan jika pakai layer saja
+
+    [Header("FX")]
+    [SerializeField] private AudioSource sparksSfx;
+    [SerializeField] private GameObject sparksParticle;
+    [SerializeField] private float fxLifetime = 0.6f;
+
+    [Header("Deform (contoh sederhana)")]
+    [SerializeField] private float shrink = 0.03f;
+    [SerializeField] private float expand = 0.02f;
+    [SerializeField] private Vector2 clampRange = new Vector2(0.05f, 0.5f);
+
+    private void Reset() { rb = GetComponent<Rigidbody>(); }
 
     private void OnTriggerEnter(Collider other)
     {
+        bool layerOK = (targetLayers.value & (1 << other.gameObject.layer)) != 0;
+        if (!(layerOK || (!string.IsNullOrEmpty(targetTag) && other.CompareTag(targetTag)))) return;
+        if (!rb || rb.velocity.magnitude < minHammerSpeed) return;
 
-        if (((1 << other.gameObject.layer) & Layer) != 0 || other.gameObject.CompareTag("Besi"))
+        // WAJIB: besi harus sedang panas
+        var heat = other.GetComponent<HeatedMetal>();
+        Debug.Log(heat.IsHot);
+        if (heat == null || !heat.IsHot) return;
+
+        // FX
+        Vector3 contact = other.ClosestPoint(hitPosition ? hitPosition.position : transform.position);
+        if (sparksParticle) Destroy(Instantiate(sparksParticle, contact, Quaternion.identity), fxLifetime);
+        if (sparksSfx)
         {
-
-            if (rb.velocity.magnitude > KekuatanMemalu)
-            {
-
-                Vector3 contactPoint = other.ClosestPoint(Position.position);
-                Vector3 center = other.bounds.center;
-                Vector3 localHitPoint = other.transform.InverseTransformPoint(contactPoint);
-                Vector3 hitDirection = localHitPoint.normalized;
-                if (particle != null)
-                {
-                    Destroy(Instantiate(particle, contactPoint, Quaternion.identity), 0.5f);
-                }
-
-                if (Sparks != null)
-                {
-                    Sparks.transform.position = contactPoint;
-                    Sparks.volume = Random.Range(0.3f, 1.3f);
-                    Sparks.pitch = Random.Range(0.5f, 1.5f);
-                    Sparks.Play();
-                }
-
-                Vector3 scale = other.transform.localScale;
-
-                if (Mathf.Abs(hitDirection.y) > Mathf.Abs(hitDirection.x) && Mathf.Abs(hitDirection.y) > Mathf.Abs(hitDirection.z))
-                {
-                    scale.y -= 0.03f;
-                    scale.x += 0.02f;
-                    scale.z += 0.02f;
-                }
-                else if (Mathf.Abs(hitDirection.x) > Mathf.Abs(hitDirection.z))
-                {
-                    scale.x -= 0.03f;
-                    scale.y += 0.02f;
-                    scale.z += 0.02f;
-                }
-                else
-                {
-                    scale.z -= 0.03f;
-                    scale.x += 0.02f;
-                    scale.y += 0.02f;
-                }
-
-                // Batasi ukuran minimum dan maksimum
-                scale.x = Mathf.Clamp(scale.x, 0.05f, 0.5f);
-                scale.y = Mathf.Clamp(scale.y, 0.05f, 0.5f);
-                scale.z = Mathf.Clamp(scale.z, 0.05f, 0.5f);
-
-                other.transform.localScale = scale;
-            }
+            sparksSfx.transform.position = contact;
+            sparksSfx.pitch = Random.Range(0.9f, 1.3f);
+            sparksSfx.volume = Random.Range(0.6f, 1.0f);
+            sparksSfx.Play();
         }
+
+        // Deform sederhana (ubah scale)
+        var tr = other.transform;
+        var scale = tr.localScale;
+        Vector3 localHit = tr.InverseTransformPoint(contact).normalized;
+
+        if (Mathf.Abs(localHit.y) > Mathf.Abs(localHit.x) && Mathf.Abs(localHit.y) > Mathf.Abs(localHit.z))
+        {
+            scale.y -= shrink; scale.x += expand; scale.z += expand;
+        }
+        else if (Mathf.Abs(localHit.x) > Mathf.Abs(localHit.z))
+        {
+            scale.x -= shrink; scale.y += expand; scale.z += expand;
+        }
+        else
+        {
+            scale.z -= shrink; scale.x += expand; scale.y += expand;
+        }
+
+        scale.x = Mathf.Clamp(scale.x, clampRange.x, clampRange.y);
+        scale.y = Mathf.Clamp(scale.y, clampRange.x, clampRange.y);
+        scale.z = Mathf.Clamp(scale.z, clampRange.x, clampRange.y);
+        tr.localScale = scale;
     }
 
-
-    void OnDrawGizmosSelected()
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
     {
-        if (Position != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(Position.position, Radius);
-        }
+        if (!hitPosition) return;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(hitPosition.position, 0.025f);
     }
+#endif
 }

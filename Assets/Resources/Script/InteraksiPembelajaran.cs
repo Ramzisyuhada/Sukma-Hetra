@@ -8,9 +8,16 @@ public class InteraksiPembelajaran : MonoBehaviour
     private VideoPlayer player;
     private GameObject tv;
     bool isPlayingVid = false;
-    private void Start()
+    public RenderTexture renderTexture;
+    private void Awake()
     {
         player = GetComponent<VideoPlayer>();
+    }
+    private void Start()
+    {
+ 
+        renderTexture = new RenderTexture(640, 360, 0); // width, height, depth
+        player.targetTexture = renderTexture;
     }
     public void PlayVideo()
     {
