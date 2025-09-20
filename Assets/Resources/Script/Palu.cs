@@ -22,7 +22,10 @@ public class Palu : MonoBehaviour
     [SerializeField] private Vector2 clampRange = new Vector2(0.05f, 0.5f);
 
     private void Reset() { rb = GetComponent<Rigidbody>(); }
-
+    private void Awake()
+    {
+       Debug.Log(sparksSfx.gameObject.name);
+    }
     private void OnTriggerEnter(Collider other)
     {
         bool layerOK = (targetLayers.value & (1 << other.gameObject.layer)) != 0;
@@ -31,24 +34,61 @@ public class Palu : MonoBehaviour
 
         // WAJIB: besi harus sedang panas
         var heat = other.GetComponent<HeatedMetal>();
-        Debug.Log(heat.IsHot);
         if (heat == null || !heat.IsHot) return;
 
-        // FX
-        Vector3 contact = other.ClosestPoint(hitPosition ? hitPosition.position : transform.position);
-        if (sparksParticle) Destroy(Instantiate(sparksParticle, contact, Quaternion.identity), fxLifetime);
-        if (sparksSfx)
+        // Register tempa ke ItemHolder
+        var holder = other.GetComponentInParent<ItemHolder>();
+        if (holder != null && holder.AddForgeHit())
         {
-            sparksSfx.transform.position = contact;
-            sparksSfx.pitch = Random.Range(0.9f, 1.3f);
-            sparksSfx.volume = Random.Range(0.6f, 1.0f);
-            sparksSfx.Play();
+            // FX & deform sesudah hit tercatat
+            Vector3 contact = other.ClosestPoint(hitPosition ? hitPosition.position : transform.position);
+            PlayFx(contact);
+            if (other.CompareTag("BesiPanjang")) return;
+            Deform(other.transform, contact);
+        }
+        else
+        {
+            // fallback: tetap mainkan FX jika mau
+            Vector3 contact = other.ClosestPoint(hitPosition ? hitPosition.position : transform.position);
+            PlayFx(contact);
+        }
+    }
+
+    private void PlayFx(Vector3 contact)
+    {
+        if (sparksParticle)
+            Destroy(Instantiate(sparksParticle, contact, Quaternion.identity), fxLifetime);
+
+        if (!sparksSfx)
+        {
+            Debug.LogWarning("[Palu] sparksSfx belum di-assign di Inspector.");
+            return;
         }
 
-        // Deform sederhana (ubah scale)
-        var tr = other.transform;
+        // Pastikan ada clip. Kalau tidak ada, log supaya kelihatan di Console.
+        if (!sparksSfx.clip)
+        {
+            Debug.LogWarning("[Palu] AudioSource tidak punya AudioClip. Isi 'Clip' di komponen AudioSource.");
+            return;
+        }
+
+        // Tempatkan sumber suara di titik kontak (untuk 3D audio)
+        sparksSfx.transform.position = contact;
+
+        // Randomisasi pitch & volume
+        float pitch = Random.Range(0.9f, 1.3f);
+        float vol = Random.Range(0.6f, 1.0f);
+        sparksSfx.pitch = pitch;
+
+        // PlayOneShot pakai clip bawaan AudioSource, aman meski AudioSource sedang play
+        sparksSfx.PlayOneShot(sparksSfx.clip, vol);
+    }
+
+
+    private void Deform(Transform tr, Vector3 contactWorld)
+    {
         var scale = tr.localScale;
-        Vector3 localHit = tr.InverseTransformPoint(contact).normalized;
+        Vector3 localHit = tr.InverseTransformPoint(contactWorld).normalized;
 
         if (Mathf.Abs(localHit.y) > Mathf.Abs(localHit.x) && Mathf.Abs(localHit.y) > Mathf.Abs(localHit.z))
         {

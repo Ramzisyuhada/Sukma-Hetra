@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Pisau
   m_EditorClassIdentifier: 
   itemType: 5
-  quantity: 1
+  icon: {fileID: 0}
+  defaultPrefab: {fileID: 0}
+  requiredHits: 0

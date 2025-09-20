@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: KepalaCangkul
   m_EditorClassIdentifier: 
   itemType: 11
-  quantity: 1
+  icon: {fileID: 0}
+  defaultPrefab: {fileID: 0}
+  requiredHits: 1

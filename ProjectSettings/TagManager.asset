@@ -10,6 +10,7 @@ TagManager:
   - Video
   - PPT
   - BesiPanas
+  - BesiPanjang
   layers:
   - Default
   - TransparentFX

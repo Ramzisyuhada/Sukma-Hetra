@@ -10,5 +10,5 @@ public class ItemData : ScriptableObject
     public GameObject defaultPrefab;
 
     [Header("Deprecated / tidak dipakai oleh sistem resep")]
-    public int quantity; // Biarkan saja kalau sudah terlanjur ada, tapi tidak digunakan.
+    public int requiredHits = 0; // Biarkan saja kalau sudah terlanjur ada, tapi tidak digunakan.
 }

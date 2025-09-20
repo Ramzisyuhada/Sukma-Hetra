@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30613c8d2d2f95148a1a1bbb266842e1, type: 3}
+  m_Name: KepalaArit
+  m_EditorClassIdentifier: 
+  requiredMaterials:
+  - item: {fileID: 11400000, guid: a1cac74ba581af4439f8f373cb4f8e94, type: 2}
+    quantity: 1
+    minForgeHits: 2
+  - item: {fileID: 11400000, guid: 6dfd673605cb2624e912bbda831f1c62, type: 2}
+    quantity: 1
+    minForgeHits: 4
+  resultItem: {fileID: 11400000, guid: ca568300866e16847b13bf488b346276, type: 2}
+  resultPrefab: {fileID: 1054163481919331193, guid: 566bd6eadf64e844c90fda31aa8350b4,
+    type: 3}

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using HurricaneVR.Framework.Components;      // HVRGrabbable
 using HurricaneVR.Framework.Core.Grabbers;  // HVRGrabberBase
-using HurricaneVR.Framework.Core;           // versi HVR lain-lain
+using HurricaneVR.Framework.Core;
+using TMPro;           // versi HVR lain-lain
 
 [DisallowMultipleComponent]
 public class ItemHolder : MonoBehaviour
@@ -23,6 +24,38 @@ public class ItemHolder : MonoBehaviour
 
     private HVRGrabbable _grabbable;
 
+    public int ForgeCount { get; private set; }
+
+    [SerializeField] private int forgeRequired = 3;   // tampakkan di Inspector
+    public int ForgeRequired => forgeRequired;
+    public bool IsForgeComplete => ForgeCount >= forgeRequired;
+
+
+    [SerializeField] private float forgeHitCooldown = 0.15f;
+    private double _lastForgeHitTime;
+
+
+    [Header("UI")]
+
+    [SerializeField]private TMP_Text Memalu;
+
+    /// <summary>Tambah 1 hit tempa. Return true kalau hit dihitung (anti spam).</summary>
+    public bool AddForgeHit()
+    {
+        if (Time.timeAsDouble - _lastForgeHitTime < forgeHitCooldown) return false;
+
+        ForgeCount++;
+        _lastForgeHitTime = Time.timeAsDouble;
+        Memalu.text = ForgeCount.ToString();
+        Debug.Log($"[{name}] ForgeCount = {ForgeCount}/{forgeRequired}");
+
+        if (IsForgeComplete)
+        {
+            Debug.Log($"[{name}] ✅ Tempa lengkap!");
+            // TODO: VFX/SFX selesai, ubah material, dsb.
+        }
+        return true;
+    }
     private void Awake()
     {
         // cari HVRGrabbable di self/child/parent (struktur prefab bisa beda-beda)

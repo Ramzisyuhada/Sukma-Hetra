@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Cangkul
   m_EditorClassIdentifier: 
   requiredMaterials:
-  - item: {fileID: 11400000, guid: ba5c830cd1600f44dae25967bc0a230a, type: 2}
+  - item: {fileID: 11400000, guid: a1cac74ba581af4439f8f373cb4f8e94, type: 2}
     quantity: 1
-  - item: {fileID: 11400000, guid: ba5c830cd1600f44dae25967bc0a230a, type: 2}
+    minForgeHits: 2
+  - item: {fileID: 11400000, guid: a1cac74ba581af4439f8f373cb4f8e94, type: 2}
     quantity: 1
+    minForgeHits: 2
   resultItem: {fileID: 11400000, guid: e8fc52fb7cb227745aa55d0900468f4d, type: 2}
   resultPrefab: {fileID: 3026054631935877091, guid: 973b699c980a67840b679fcc1fe4ebf5,
     type: 3}

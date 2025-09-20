@@ -4,7 +4,8 @@ public enum JenisBarangEnum
     BesiPanas,
     Kayu,
     BesiPanjang,
-    BesiAsah,
+    KepalaArit,
+   // BesiAsah,
     Pisau,
     Bucket,
     Hoe,
@@ -12,5 +13,7 @@ public enum JenisBarangEnum
     Spade,
     SpadingFork,
     Batangkayu,
-    KepalaCangkul
+    KepalaCangkul,
+    KepalaRencong,
+
 }

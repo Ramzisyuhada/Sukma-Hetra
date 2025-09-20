@@ -250,8 +250,28 @@ MonoBehaviour:
   recipes:
   - {fileID: 11400000, guid: 512ea4b09347ad3489978705a631de2e, type: 2}
   - {fileID: 11400000, guid: 323a12bb9ed39874799594c8d3b59544, type: 2}
-  requireReleaseInsideZone: 1
-  craftDebounceSeconds: 1
+  - {fileID: 11400000, guid: 5e6151ed0467fbb4ca76ff27a69b64cc, type: 2}
+  - {fileID: 11400000, guid: 3fa47540daab00145a5d0266d65db052, type: 2}
+  holdRequiredSeconds: 0.25
+  craftDistance: 0.3
   particle: {fileID: 5700784828077083704, guid: ed962e35f7fa6f34f8d27aa6d19ea293,
     type: 3}
   audio: {fileID: 1180223626905998075}
+  resultGrabTrigger: 2
+  resultGrabPoint: {fileID: 0}
+  craftCooldown: 0.15
+  serverAuthoritative: 0
+  scanRadius: 0.6
+  itemLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  scanAtTransformPosition: 1
+  scanOffset: {x: 0, y: 0, z: 0}
+  debugDraw: 1
+  debugDrawRuntime: 1
+  debugShowText: 1
+  debugLineDuration: 0.05
+  debugSphereRadius: 0.02
+  debugNearColor: {r: 0, g: 1, b: 0, a: 1}
+  debugFarColor: {r: 1, g: 0, b: 0, a: 1}
+  debugCircleColor: {r: 0.2, g: 0.8, b: 1, a: 0.6}
