@@ -15,5 +15,6 @@ public enum JenisBarangEnum
     Batangkayu,
     KepalaCangkul,
     KepalaRencong,
-
+    KepalaKeris,
+    KepalaGolok
 }

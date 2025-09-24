@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30613c8d2d2f95148a1a1bbb266842e1, type: 3}
+  m_Name: Golok
+  m_EditorClassIdentifier: 
+  requiredMaterials:
+  - item: {fileID: 11400000, guid: fada54849e509f94c9bf8db47566e298, type: 2}
+    quantity: 1
+    minForgeHits: 0
+  - item: {fileID: 11400000, guid: ba5c830cd1600f44dae25967bc0a230a, type: 2}
+    quantity: 1
+    minForgeHits: 0
+  resultItem: {fileID: 11400000, guid: e8fc52fb7cb227745aa55d0900468f4d, type: 2}
+  resultPrefab: {fileID: 4703051128065475927, guid: 6d4b0dfed3ebe78469ca20fc3f74d641,
+    type: 3}
+  grindSeconds: 1.5

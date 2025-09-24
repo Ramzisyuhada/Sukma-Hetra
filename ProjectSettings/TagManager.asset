@@ -11,6 +11,7 @@ TagManager:
   - PPT
   - BesiPanas
   - BesiPanjang
+  - projectile
   layers:
   - Default
   - TransparentFX

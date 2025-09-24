@@ -15,7 +15,7 @@ MonoBehaviour:
   requiredMaterials:
   - item: {fileID: 11400000, guid: 6dfd673605cb2624e912bbda831f1c62, type: 2}
     quantity: 1
-    minForgeHits: 2
+    minForgeHits: 3
   resultItem: {fileID: 11400000, guid: bad6f3e6464f21c48b77b7f8fbd748ff, type: 2}
   resultPrefab: {fileID: 3570982334666534645, guid: d31d18d39b802de4095d144621574be2,
     type: 3}

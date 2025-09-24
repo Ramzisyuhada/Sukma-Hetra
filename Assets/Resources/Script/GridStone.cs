@@ -117,6 +117,26 @@ public class GridStone : MonoBehaviour
         if (string.IsNullOrEmpty(targetTag)) return true;
         return col.CompareTag(targetTag);
     }
+    private int GetCurrentForgeHits(Collider inputCol)
+    {
+        if (!inputCol) return 0;
+
+ ;
+
+        // 2) atau kalau ItemHolder menyimpan hit
+        var holder = inputCol.GetComponentInParent<ItemHolder>();
+        if (holder && holder.ForgeCount >= 0) return holder.ForgeCount;
+
+        return 0;
+    }
+
+    private static int GetMinHitsForItem(BlacksmithRecipe r, ItemData item)
+    {
+        if (r?.requiredMaterials == null || item == null) return int.MaxValue;
+        var m = r.requiredMaterials.Find(x => x != null && x.item == item);
+        return m?.minForgeHits ?? int.MaxValue;
+    }
+
 
     private BlacksmithRecipe SelectRecipeFor(Collider inputCol)
     {
@@ -124,20 +144,43 @@ public class GridStone : MonoBehaviour
 
         var holder = inputCol ? inputCol.GetComponentInParent<ItemHolder>() : null;
         var item = holder ? holder.itemData : null;
+        int hitsNow = GetCurrentForgeHits(inputCol);
 
-        if (item != null)
+        var valid = recipes.Where(r => r && r.resultPrefab && r.grindSeconds >= minGrindSeconds);
+
+        if (item)
         {
-            var exact = recipes.FirstOrDefault(r =>
-                r != null &&
-                r.requiredMaterials != null &&
-                r.requiredMaterials.Count > 0 &&
-                r.requiredMaterials[0] != null &&
-                r.requiredMaterials[0].item == item);
-            if (exact != null) return exact;
+            var candidates = valid
+                .Where(r => r.requiredMaterials != null &&
+                            r.requiredMaterials.Any(m => m != null && m.item == item))
+                .Select(r => new {
+                    r,
+                    minHits = GetMinHitsForItem(r, item)
+                });
+
+            var bestLE = candidates
+                .Where(x => x.minHits <= hitsNow)
+                .OrderByDescending(x => x.minHits)  // paling “pas”
+                .ThenBy(x => x.r.grindSeconds)      // tie-breaker cepat
+                .Select(x => x.r)
+                .FirstOrDefault();
+
+            if (bestLE) return bestLE;
+
+            // belum cukup tempa → pilih yang syaratnya paling rendah (paling dekat)
+            var nearestAbove = candidates
+                .OrderBy(x => x.minHits)
+                .ThenBy(x => x.r.grindSeconds)
+                .Select(x => x.r)
+                .FirstOrDefault();
+
+            if (nearestAbove) return nearestAbove;
         }
 
-        return recipes.FirstOrDefault(r => r != null && r.resultPrefab != null && r.grindSeconds >= minGrindSeconds);
+        // fallback terakhir: yang tercepat saja
+        return valid.OrderBy(r => r.grindSeconds).FirstOrDefault();
     }
+
 
     private void CraftWithRecipe(Collider inputCol, BlacksmithRecipe recipeToUse)
     {

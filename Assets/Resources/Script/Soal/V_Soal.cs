@@ -28,7 +28,7 @@ public class V_Soal : MonoBehaviour
     [SerializeField] TextMeshProUGUI akurasiTMP;
 
     // parent untuk pilihanjawaban
-    [SerializeField] GameObject parentPilihanJawaban;    
+    [SerializeField] GameObject parentPilihanJawaban;
 
     // varaible penghimpun soal-soal dan jawaban serta idnex jawaban benar
     [SerializeField] List<M_Soal> soalsoal = new List<M_Soal>();
@@ -55,7 +55,7 @@ public class V_Soal : MonoBehaviour
     private GameObject g;
 
     private XRController controller;
-    private static float nilai ;
+    private static float nilai;
     // Start is called before the first frame update
 
 
@@ -66,9 +66,9 @@ public class V_Soal : MonoBehaviour
     }
     void Start()
     {
-        
 
-        if(nilai != null)
+
+        if (nilai != null)
         {
             akurasiTMP.text = nilai.ToString("#.##") + "%";
 
@@ -78,7 +78,7 @@ public class V_Soal : MonoBehaviour
 
 
         if (parentPilihanJawaban.transform.childCount == 0) return;
-        
+
         banyakJawabanTersedia = parentPilihanJawaban.transform.childCount;
         InitSoal();
     }
@@ -91,14 +91,14 @@ public class V_Soal : MonoBehaviour
         soalsoal = vm_soal.CurrSoal;
 
         TampilkanSoalJawaban();
-    }    
+    }
 
     void TampilkanSoalJawaban()
     {
         // ambil soal yang terpilih
         soalTerpilih = vm_soal.PilihSoalAvailable();
         // tempelin soal ke text
-        tampilSoal.text = soalTerpilih.soal;        
+        tampilSoal.text = soalTerpilih.soal;
         // generate pilihan jawaban
         GeneratePilihanJawaban();
 
@@ -137,7 +137,7 @@ public class V_Soal : MonoBehaviour
         }
     }
 
-    
+
     public void CekJawaban()
     {
         //if( vm_soal.IsMenjawab(UnityEngine.EventSystems.EventSystem
@@ -153,7 +153,7 @@ public class V_Soal : MonoBehaviour
         // get GO UI
 
 
-         g = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
+        g = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
         // cek jawaban
         bool cek = vm_soal.IsMenjawab(g.GetComponent<V_Temp>()._index, soalTerpilih.kunci);
 
@@ -175,7 +175,7 @@ public class V_Soal : MonoBehaviour
 
     void SetWarnaButton(GameObject _btn, bool _hasiljawab)
     {
-        _btn.GetComponent<Image>().color = 
+        _btn.GetComponent<Image>().color =
             !_hasiljawab ? Color.red : Color.green;
     }
 
