@@ -415,7 +415,7 @@ namespace HurricaneVR.Framework.Core.Grabbers
 
         #endregion
 
-
+        
         protected override void Awake()
         {
             base.Awake();
@@ -586,8 +586,6 @@ namespace HurricaneVR.Framework.Core.Grabbers
             //    if(!Rigidbody.detectCollisions) StartPushing();
             //    Rigidbody.detectCollisions = !Rigidbody.detectCollisions;
             //}
-
-
             if (PerformUpdate)
             {
                 CheckCanActivate();

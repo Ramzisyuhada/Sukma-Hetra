@@ -238,7 +238,8 @@ namespace HurricaneVR.Framework.Core.Player
 
         protected virtual bool RightHandPrevents { get; set; }
 
-        protected virtual bool HandPrevents => LeftHandPrevents || RightHandPrevents;
+        protected virtual bool HandPrevents =>
+      LeftHandPrevents || RightHandPrevents || HandsBlocking();
 
         public bool IsTeleportPreviouslyValid { get; protected set; }
 
@@ -374,6 +375,11 @@ namespace HurricaneVR.Framework.Core.Player
             }
 
             if (PlayerClimbingCheck && Player && Player.IsClimbing)
+            {
+                Disable();
+                return;
+            }
+            if (HandsBlocking())
             {
                 Disable();
                 return;
@@ -548,6 +554,8 @@ namespace HurricaneVR.Framework.Core.Player
 
         protected virtual void ToggleGraphics(bool toggle)
         {
+            if (HandsBlocking()) toggle = false;
+
             if (TeleportMarker)
             {
                 if (toggle)
@@ -570,7 +578,7 @@ namespace HurricaneVR.Framework.Core.Player
 
         protected virtual bool CheckCanTeleport()
         {
-            return CanTeleport && !IsTeleporting;
+            return CanTeleport && !IsTeleporting && !HandsBlocking();
         }
 
         /// <summary>
@@ -854,7 +862,13 @@ namespace HurricaneVR.Framework.Core.Player
                 }
             }
         }
-
+        // Tambah helper kecil
+        private bool HandsBlocking()
+        {
+            return
+                (LeftHand && (LeftHand.IsGrabbing || LeftHand.IsHovering || LeftHand.IsTriggerHovering)) ||
+                (RightHand && (RightHand.IsGrabbing || RightHand.IsHovering || RightHand.IsTriggerHovering));
+        }
         protected virtual void UpdateLineRenderer(Vector3 hitPoint, int lastValidIndex, bool lineValid)
         {
             if (LineRenderer)

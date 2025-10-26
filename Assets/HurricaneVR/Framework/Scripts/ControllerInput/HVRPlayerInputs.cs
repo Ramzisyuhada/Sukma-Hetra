@@ -416,24 +416,42 @@ namespace HurricaneVR.Framework.ControllerInput
             return RightController.JoystickAxis;
         }
 
+        //protected virtual bool GetTeleportDeactivated()
+        //{
+        //    if (HVRInputManager.Instance.RightController.ControllerType == HVRControllerType.Vive)
+        //    {
+        //        return HVRController.GetButtonState(HVRHandSide.Right, HVRButtons.Menu).JustDeactivated;
+        //    }
+
+        //    return TeleportController.JoystickAxis.y > -.25f;
+        //}
+
+        //protected virtual bool GetTeleportActivated()
+        //{
+        //    if (HVRInputManager.Instance.RightController.ControllerType == HVRControllerType.Vive)
+        //    {
+        //        return HVRController.GetButtonState(HVRHandSide.Right, HVRButtons.Menu).Active;
+        //    }
+
+        //    return TeleportController.JoystickAxis.y < -.5f && Mathf.Abs(TeleportController.JoystickAxis.x) < .30;
+        //}
+        protected virtual bool GetTeleportActivated()
+        {
+            // Vive pakai Menu seperti sebelumnya
+            if (HVRInputManager.Instance.RightController.ControllerType == HVRControllerType.Vive)
+                return HVRController.GetButtonState(HVRHandSide.Right, HVRButtons.Menu).Active;
+
+            // Tahan Grip pada controller teleport (Left/Right tergantung TeleportHandSide)
+            return TeleportController.GripButtonState.Active;
+        }
+
         protected virtual bool GetTeleportDeactivated()
         {
             if (HVRInputManager.Instance.RightController.ControllerType == HVRControllerType.Vive)
-            {
                 return HVRController.GetButtonState(HVRHandSide.Right, HVRButtons.Menu).JustDeactivated;
-            }
 
-            return TeleportController.JoystickAxis.y > -.25f;
-        }
-
-        protected virtual bool GetTeleportActivated()
-        {
-            if (HVRInputManager.Instance.RightController.ControllerType == HVRControllerType.Vive)
-            {
-                return HVRController.GetButtonState(HVRHandSide.Right, HVRButtons.Menu).Active;
-            }
-
-            return TeleportController.JoystickAxis.y < -.5f && Mathf.Abs(TeleportController.JoystickAxis.x) < .30;
+            // Lepas Grip = selesai/membatalkan teleport
+            return TeleportController.GripButtonState.JustDeactivated;
         }
 
         protected virtual bool GetSprinting()

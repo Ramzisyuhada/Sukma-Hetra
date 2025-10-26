@@ -15,10 +15,11 @@ MonoBehaviour:
   requiredMaterials:
   - item: {fileID: 11400000, guid: a1cac74ba581af4439f8f373cb4f8e94, type: 2}
     quantity: 1
-    minForgeHits: 2
+    minForgeHits: 4
   - item: {fileID: 11400000, guid: 6dfd673605cb2624e912bbda831f1c62, type: 2}
     quantity: 1
-    minForgeHits: 4
+    minForgeHits: 2
   resultItem: {fileID: 11400000, guid: ca568300866e16847b13bf488b346276, type: 2}
   resultPrefab: {fileID: 1054163481919331193, guid: 566bd6eadf64e844c90fda31aa8350b4,
     type: 3}
+  grindSeconds: 1.5
